@@ -1,0 +1,8 @@
+{
+  "name": "wsc-landing",
+  "type": "module",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "node wsc-generate.js"
+  }
+}

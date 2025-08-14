@@ -1,20 +1,20 @@
-// wsc-generate.js — NEXT LEVEL version
-// Builds a static site from your YouTube channel RSS (no API key).
-// Adds search, auto-tags, tag pages, Shorts/Long hubs, social share, JSON-LD, better SEO.
+// wsc-generate.js — NEXT LEVEL version (known-good)
+// Builds static site from your YouTube channel RSS (no API key).
+// Adds search, auto-tags, tag pages, Shorts/Long hubs, JSON-LD, share buttons, better SEO.
 
 import fs from "fs/promises";
 import path from "path";
 
 const BRAND = {
   siteTitle: "West Side Cotorreo — Podcast Oficial",
-  baseUrl: "https://baysbestshorts-eng.github.io/westsidecotorreo-site", // your Pages URL
+  baseUrl: "https://baysbestshorts-eng.github.io/westsidecotorreo-site", // no trailing slash
   channelId: "UCmJ1mRAtqRB0QUPYP-uvZiw",
   maxVideos: 300
 };
 
 const OUT = "site";
 
-/** ---------- Styles ---------- **/
+/* ----------------- Styles ----------------- */
 const css = `
 :root{--bg:#fafafa;--text:#111;--muted:#777;--card:#fff;--line:#e8e8e8;--brand:#0a5}
 *{box-sizing:border-box}
@@ -34,10 +34,10 @@ footer{margin:40px 0 10px;color:var(--muted);font-size:12px;text-align:center}
 .search{display:flex;gap:10px;align-items:center;margin:10px 0 14px}
 input[type="search"]{flex:1;padding:10px 12px;border-radius:10px;border:1px solid #ddd}
 .small{font-size:13px;color:var(--muted)}
-hr{border:0;border-top:1px solid var(--line);margin:18px 0}
+hr{border:0;border-top:1px solid #e8e8e8;margin:18px 0}
 `;
 
-/** ---------- HTML Head ---------- **/
+/* ----------------- Head ----------------- */
 const head = (title, desc, url, image) => `<!doctype html><html lang="es"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${title}</title>
@@ -52,7 +52,7 @@ const head = (title, desc, url, image) => `<!doctype html><html lang="es"><head>
 <style>${css}</style>
 </head>`;
 
-/** ---------- Helpers ---------- **/
+/* ----------------- Helpers ----------------- */
 const clean = s => (s || "").toString().replace(/\s+/g," ").trim();
 const slug = s => clean(s).toLowerCase()
   .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
@@ -66,11 +66,11 @@ const shareLinks = (url, title) => ({
   wa: `https://api.whatsapp.com/send?text=${encodeURIComponent(title + " " + url)}`
 });
 
-/** ---------- Auto Tagging ---------- **/
+/* ----------------- Auto-tagging ----------------- */
 const KEYWORDS = [
   { tag: "shorts",     any: [/\b#?shorts?\b/i] },
   { tag: "fútbol",     any: [/futbol|fútbol|soccer|liga mx|chivas|américa/i] },
-  { tag: "boxeo",      any: [/boxeo|boxing|Canelo|Pacquiao|Tyson|UFC|MMA/i] },
+  { tag: "boxeo",      any: [/boxeo|boxing|Canelo|Tyson|UFC|MMA/i] },
   { tag: "UFC",        any: [/\bUFC\b|ultimate fighting/i] },
   { tag: "NBA",        any: [/\bNBA\b|Lakers|Celtics|Warriors|LeBron|Kobe/i] },
   { tag: "MLB",        any: [/\bMLB\b|Dodgers|Yankees|Padres|Angels/i] },
@@ -80,42 +80,57 @@ const KEYWORDS = [
   { tag: "cultura",    any: [/cultura|mexicano|chicano|tradición|familia/i] },
   { tag: "entrevista", any: [/entrevista|invitado|guest|plática/i] },
   { tag: "música",     any: [/música|corridos|banda|rap|hip hop|reggaeton/i] },
-  { tag: "podcast",    any: [/.+/] } // default baseline
+  { tag: "podcast",    any: [/.+/] }
 ];
 
 function detectTags(title, desc) {
   const hay = (re) => re.test(title) || re.test(desc);
   const set = new Set();
-  for (const row of KEYWORDS) {
-    if (row.any.some(hay)) set.add(row.tag);
-  }
-  // Ensure shorts detection (already included above) and podcast baseline
+  for (const row of KEYWORDS) if (row.any.some(hay)) set.add(row.tag);
   return Array.from(set);
 }
 
-/** ---------- Fetch RSS ---------- **/
-async function fetchRSS(channelId){
-  const url = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
-  const res = await fetch(url);
-  if(!res.ok) throw new Error(`RSS fetch failed ${res.status}`);
-  const xml = await res.text();
-  const entries = [...xml.matchAll(/<entry>([\s\S]*?)<\/entry>/g)].map(m=>m[1]);
-  return entries.map(e=>{
-    const get = (re) => (e.match(re)||[])[1] || "";
-    const id   = get(/<yt:videoId>(.*?)<\/yt:videoId>/);
-    const title= clean(get(/<title>([\s\S]*?)<\/title>/));
-    const desc = clean(get(/<media:description>([\s\S]*?)<\/media:description>/));
-    const pub  = get(/<published>(.*?)<\/published>/);
-    const thumb= get(/<media:thumbnail url="(.*?)"/) || `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
+/* ----------------- RSS fetch (retry + fallback) ----------------- */
+async function fetchRSS(channelId) {
+  const urls = [
+    `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`,
+    `https://r.jina.ai/http://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`
+  ];
+  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+  async function tryFetch(u) {
+    let lastErr;
+    for (let i = 0; i < 3; i++) {
+      try {
+        const res = await fetch(u);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return await res.text();
+      } catch (e) { lastErr = e; await sleep(1200 * (i + 1)); }
+    }
+    throw lastErr;
+  }
+  let xml = "";
+  for (const u of urls) {
+    try { xml = await tryFetch(u); break; } catch { /* try next */ }
+  }
+  if (!xml) { console.warn("RSS fetch failed; building empty site."); return []; }
+
+  const entries = [...xml.matchAll(/<entry>([\s\S]*?)<\/entry>/g)].map(m => m[1]);
+  return entries.map(e => {
+    const get = re => (e.match(re)||[])[1] || "";
+    const id = get(/<yt:videoId>(.*?)<\/yt:videoId>/);
+    const title = (get(/<title>([\s\S]*?)<\/title>/) || "").trim();
+    const desc = (get(/<media:description>([\s\S]*?)<\/media:description>/) || "").trim();
+    const pub = get(/<published>(.*?)<\/published>/);
+    const thumb = get(/<media:thumbnail url="(.*?)"/) || `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
     const tags = detectTags(title + " " + desc, desc);
-    return { id, title, summary: desc.slice(0, 600), published: pub, thumb, slug: slug(title || id), tags };
+    return { id, title, summary: desc.slice(0,600), published: pub, thumb, slug: slug(title || id), tags };
   });
 }
 
-/** ---------- Pages ---------- **/
-const homePage = (videos, tags)=>{
+/* ----------------- Pages ----------------- */
+const homePage = (videos, tags) => {
   const url = BRAND.baseUrl;
-  const desc = "Episodios y Shorts de West Side Cotorreo con búsqueda, tags y páginas de hubs.";
+  const desc = "Episodios y Shorts de West Side Cotorreo con búsqueda, tags y hubs.";
   const og = videos[0]?.thumb || `${BRAND.baseUrl}/og.jpg`;
   return `${head(BRAND.siteTitle, desc, url, og)}<body><div class="wrap">
 <header>
@@ -130,7 +145,9 @@ const homePage = (videos, tags)=>{
 
 <div class="search">
   <input id="q" type="search" placeholder="Buscar episodio, invitado o tema…">
-  <div class="small">Filtrar: ${tags.map(t=>`<a class="tag" href="${BRAND.baseUrl}/tags/${slug(t)}/">${t}</a>`).join(" ")}</div>
+  <div class="small">Filtrar:
+    ${tags.map(t=>`<a class="tag" href="${BRAND.baseUrl}/tags/${slug(t)}/">${t}</a>`).join(" ")}
+  </div>
 </div>
 
 <div class="grid" id="grid">
@@ -153,7 +170,7 @@ q?.addEventListener('input', e=>{
 });
 </script>
 
-<footer>© ${new Date().getFullYear()} West Side Cotorreo — Enlaces oficiales</footer>
+<footer>© ${new Date().getFullYear()} West Side Cotorreo</footer>
 </div></body></html>`;
 };
 
@@ -235,7 +252,7 @@ ${JSON.stringify(jsonLD(v), null, 2)}
 </div></body></html>`;
 };
 
-/** ---------- Feeds ---------- **/
+/* ----------------- Feeds ----------------- */
 const makeRSS = (videos)=>`<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0"><channel>
 <title>${BRAND.siteTitle}</title>
@@ -260,7 +277,7 @@ const makeSitemap = (videos,tags)=>`<?xml version="1.0" encoding="UTF-8"?>
   ${videos.map(v=>`<url><loc>${BRAND.baseUrl}/episodios/${v.slug}/</loc></url>`).join("")}
 </urlset>`;
 
-/** ---------- Build ---------- **/
+/* ----------------- Build ----------------- */
 async function main(){
   const outDir = path.resolve(OUT);
   await fs.rm(outDir, {recursive:true, force:true});
@@ -271,7 +288,6 @@ async function main(){
     .sort((a,b)=> new Date(b.published) - new Date(a.published));
   const tags = [...new Set(videos.flatMap(v=>v.tags))];
 
-  // Core files
   await fs.writeFile(path.join(outDir, "index.html"), homePage(videos,tags));
   await fs.writeFile(path.join(outDir, "rss.xml"), makeRSS(videos));
   await fs.writeFile(path.join(outDir, "sitemap.xml"), makeSitemap(videos,tags));
@@ -300,12 +316,6 @@ async function main(){
   }
 
   console.log(`Built ${videos.length} episodes → ${outDir}`);
-}
-
-main().catch(e=>{ console.error(e); process.exit(1); });
-
-
-  console.log(`Built ${videos.length} pages → ${outDir}`);
 }
 
 main().catch(e=>{ console.error(e); process.exit(1); });

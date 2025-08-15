@@ -1,0 +1,91 @@
+name: AI Story Rewriter Monitoring
+on:
+  workflow_dispatch:
+    inputs:
+      test_mode:
+        description: 'Run in test mode (no actual processing)'
+        required: false
+        default: 'false'
+        type: boolean
+  schedule:
+    # Run every 5 minutes for breaking news monitoring
+    - cron: "*/5 * * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  monitor-news:
+    runs-on: ubuntu-latest
+    if: ${{ vars.ENABLE_NEWS_MONITORING == 'true' }}
+    timeout-minutes: 10
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Run news monitoring
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          AI_PROVIDER: ${{ vars.AI_PROVIDER || 'openai' }}
+          AI_MODEL: ${{ vars.AI_MODEL || 'gpt-4-turbo-preview' }}
+          MAX_STORIES_PER_HOUR: ${{ vars.MAX_STORIES_PER_HOUR || '20' }}
+          REWRITE_VERSIONS: ${{ vars.REWRITE_VERSIONS || '3' }}
+          TARGET_ORIGINALITY_SCORE: ${{ vars.TARGET_ORIGINALITY_SCORE || '85' }}
+          CHECK_INTERVAL_MINUTES: ${{ vars.CHECK_INTERVAL_MINUTES || '5' }}
+          MONITOR_KEYWORDS: ${{ vars.MONITOR_KEYWORDS || 'breaking,trade,injury,suspension,fired,hired,championship,playoff' }}
+        run: |
+          if [ "${{ inputs.test_mode }}" = "true" ]; then
+            echo "Running in test mode..."
+            npm test
+          else
+            echo "Running news monitoring..."
+            npm run monitor:once
+          fi
+          
+      - name: Upload logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: monitoring-logs-${{ github.run_id }}
+          path: |
+            *.log
+            data/
+          retention-days: 7
+
+  daily-report:
+    runs-on: ubuntu-latest
+    if: ${{ vars.ENABLE_NEWS_MONITORING == 'true' }}
+    # Run daily at 9 AM UTC
+    schedule:
+      - cron: "0 9 * * *"
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Generate daily stats
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          npm run monitor:stats

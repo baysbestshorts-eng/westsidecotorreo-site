@@ -2,6 +2,20 @@
   "name": "wsc-landing",
   "type": "module",
   "version": "1.0.0",
-  "scripts": { "build": "node wsc-generate.js" }
+  "scripts": { 
+    "build": "node wsc-generate.js",
+    "monitor": "node news-monitor.js",
+    "monitor:once": "node news-monitor.js --once",
+    "monitor:stats": "node news-monitor.js --stats",
+    "test": "node test-rewriter.js",
+    "dev": "npm run build && npm run monitor"
+  },
+  "dependencies": {
+    "openai": "^4.0.0",
+    "discord.js": "^14.0.0",
+    "rss-parser": "^3.13.0",
+    "node-cron": "^3.0.0",
+    "dotenv": "^16.0.0"
+  }
 }
 

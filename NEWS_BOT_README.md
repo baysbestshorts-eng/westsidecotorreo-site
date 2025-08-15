@@ -2,6 +2,32 @@
 
 This bot monitors breaking sports news 24/7 and sends email alerts to basybestshorts@gmail.com.
 
+## Quick Start
+
+```bash
+# Install dependencies
+npm install
+
+# Run demo (no credentials needed)
+npm run demo
+
+# Test bot structure
+npm run test
+
+# Run live monitoring (requires credentials)
+npm run news-monitor
+```
+
+## Demo Mode
+
+The demo mode shows the complete email workflow with mock sports stories:
+
+```bash
+npm run demo
+```
+
+This generates sample HTML emails saved to `demo-email-*.html` files that you can open in a browser to see the professional email layout.
+
 ## Required Environment Variables
 
 Set these as GitHub repository secrets:
@@ -53,24 +79,6 @@ Each breaking news email includes:
 - Original source attribution
 - Action recommendations for Make.com workflow
 
-## Local Testing
-
-```bash
-# Install dependencies
-npm install
-
-# Set environment variables
-export EMAIL_USERNAME="your-gmail@gmail.com"
-export EMAIL_PASSWORD="your-app-password"
-export OPENAI_API_KEY="sk-your-key"
-
-# Test email configuration
-node -e "import('./breaking-news-bot.js').then(m => m.testEmailConfiguration())"
-
-# Run single monitoring cycle
-node -e "import('./breaking-news-bot.js').then(m => m.monitorBreakingNews())"
-```
-
 ## GitHub Actions Workflow
 
 - **Every 5 minutes**: Run breaking news monitoring
@@ -99,3 +107,52 @@ Email content is optimized for copy-paste into Make.com:
 - Clear action recommendations
 - Word counts for video planning
 - Urgency-based prioritization
+
+## Local Testing Examples
+
+```bash
+# Test email configuration (requires credentials)
+node -e "import('./breaking-news-bot.js').then(m => m.testEmailConfiguration())"
+
+# Run single monitoring cycle (requires credentials)
+node -e "import('./breaking-news-bot.js').then(m => m.monitorBreakingNews())"
+
+# Test bot structure (no credentials needed)
+npm run test
+
+# Generate demo emails (no credentials needed)
+npm run demo
+```
+
+## Files Overview
+
+- `breaking-news-bot.js` - Main 24/7 monitoring bot
+- `demo-news-bot.js` - Demo mode with mock data
+- `test-bot-structure.js` - Structure validation tests
+- `.github/workflows/pages.yml` - GitHub Actions configuration
+- `NEWS_BOT_README.md` - This documentation
+
+## Security Notes
+
+- Never commit credentials to source code
+- Use GitHub repository secrets for environment variables
+- Gmail App Passwords are safer than regular passwords
+- OpenAI API keys should be kept private
+
+## Troubleshooting
+
+### Email Not Sending
+1. Verify EMAIL_USERNAME and EMAIL_PASSWORD are set correctly
+2. Ensure 2FA is enabled on Gmail account
+3. Use App Password, not regular Gmail password
+4. Check that Gmail SMTP is not blocked by network
+
+### OpenAI Errors
+1. Verify OPENAI_API_KEY is valid and has credits
+2. Check OpenAI API usage limits
+3. Bot has fallback story versions if AI fails
+
+### GitHub Actions Issues
+1. Verify all secrets are set in repository settings
+2. Check workflow logs for specific error messages
+3. Ensure npm dependencies install correctly

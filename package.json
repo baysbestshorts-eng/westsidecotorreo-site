@@ -4,7 +4,9 @@
   "version": "1.0.0",
   "scripts": { 
     "build": "node wsc-generate.js",
-    "news-monitor": "node breaking-news-bot.js"
+    "news-monitor": "node breaking-news-bot.js",
+    "demo": "node demo-news-bot.js",
+    "test": "node test-bot-structure.js"
   },
   "dependencies": {
     "nodemailer": "^6.9.0",

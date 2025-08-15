@@ -1,0 +1,51 @@
+
+> wsc-landing@1.0.0 dashboard
+> node sports-dashboard.js
+
+📊 Sports News Monitoring Dashboard
+=====================================
+
+📈 **OVERVIEW**
+Total Stories Tracked: 5
+Last Update: 2025-08-15T23:00:44.982Z
+Data File Size: 3 KB
+
+🎯 **CATEGORIES**
+injury      : 1 stories
+discipline  : 1 stories
+achievement : 1 stories
+trade       : 1 stories
+retirement  : 1 stories
+
+📡 **SOURCES**
+ESPN           : 3 stories
+BBC Sport      : 2 stories
+
+🔥 **TOP STORIES** (Score 15+)
+1. [27] URGENT: Manchester City manager suspended pending investigation
+   BBC Sport • discipline • 8/15/2025, 11:00:41 PM
+
+2. [18] Yankees sign free agent superstar Juan Soto
+   ESPN • achievement • 8/15/2025, 11:00:39 PM
+
+📊 **RECENT ACTIVITY** (Last 24h)
+Stories in last 24h: 5
+Most active hour: 23:00
+
+⚙️  **CONFIGURATION**
+Monitoring Frequency: Every 5 minutes (GitHub Actions)
+Minimum Score Threshold: 6
+GitHub Issue Threshold: 15
+Discord Notifications: Disabled
+
+🎯 **QUICK STATS**
+High Priority Stories (15+): 2
+Breaking News (20+): 1
+Issues Created: 2
+
+=====================================
+🔗 **QUICK COMMANDS**
+npm run monitor:test  - Test with mock data
+npm run monitor       - Run real monitoring
+npm run issues        - Create GitHub issues
+npm run build         - Build main site

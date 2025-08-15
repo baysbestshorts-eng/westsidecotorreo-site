@@ -2,6 +2,12 @@
   "name": "wsc-landing",
   "type": "module",
   "version": "1.0.0",
-  "scripts": { "build": "node wsc-generate.js" }
+  "scripts": { 
+    "build": "node wsc-generate.js",
+    "monitor": "node sports-monitor.js",
+    "monitor:test": "node test-sports-monitor.js",
+    "issues": "node create-story-issues.js",
+    "dashboard": "node sports-dashboard.js"
+  }
 }
 

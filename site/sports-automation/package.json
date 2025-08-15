@@ -1,0 +1,58 @@
+{
+  "name": "sports-news-automation",
+  "version": "1.0.0",
+  "description": "Comprehensive automation system using Make.com and Fliki AI to generate 10-20 sports news videos per day",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node scripts/webhooks/pause-resume-handler.js",
+    "test": "node tools/testing/test-api-integrations.js",
+    "test-sports": "node tools/testing/test-api-integrations.js sports",
+    "test-content": "node tools/testing/test-api-integrations.js content",
+    "test-video": "node tools/testing/test-api-integrations.js video",
+    "monitor": "node scripts/monitoring/cost-monitor.js status",
+    "add-cost": "node scripts/monitoring/cost-monitor.js add-cost",
+    "pause": "node scripts/monitoring/cost-monitor.js pause",
+    "resume": "node scripts/monitoring/cost-monitor.js resume",
+    "reset-daily": "node scripts/monitoring/cost-monitor.js reset-daily",
+    "webhook-server": "node scripts/webhooks/pause-resume-handler.js",
+    "setup": "npm install && npm run test",
+    "build": "echo 'No build step required - this is a Node.js automation system'",
+    "docs": "echo 'Documentation available in docs/ directory'"
+  },
+  "keywords": [
+    "sports",
+    "automation", 
+    "video-generation",
+    "make.com",
+    "fliki-ai",
+    "youtube",
+    "api-sports",
+    "content-automation",
+    "webhook",
+    "cost-monitoring"
+  ],
+  "author": "Sports Automation Team",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "node-fetch": "^3.3.2",
+    "dotenv": "^16.3.1",
+    "googleapis": "^126.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/baysbestshorts-eng/westsidecotorreo-site.git",
+    "directory": "sports-automation"
+  },
+  "bugs": {
+    "url": "https://github.com/baysbestshorts-eng/westsidecotorreo-site/issues"
+  },
+  "homepage": "https://baysbestshorts-eng.github.io/westsidecotorreo-site/sports-automation/"
+}

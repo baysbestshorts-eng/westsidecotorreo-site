@@ -1,0 +1,427 @@
+{
+  "name": "Sports Data Collection",
+  "flow": [
+    {
+      "id": 1,
+      "module": "util:SetVariables2",
+      "version": 1,
+      "parameters": {},
+      "mapper": {
+        "variables": [
+          {
+            "name": "sportsAPIs",
+            "value": {
+              "apiSports": "{{environment.API_SPORTS_KEY}}",
+              "theSportsDB": "{{environment.THESPORTSDB_KEY}}",
+              "espn": "enabled"
+            }
+          },
+          {
+            "name": "enabledSports", 
+            "value": ["NFL", "NBA", "MLB", "NHL", "UFC"]
+          },
+          {
+            "name": "maxStoriesPerSport",
+            "value": 5
+          }
+        ],
+        "scope": "roundtrip"
+      },
+      "metadata": {
+        "designer": {
+          "x": 0,
+          "y": 0
+        },
+        "restore": {},
+        "expect": []
+      }
+    },
+    {
+      "id": 2,
+      "module": "http:ActionSendData", 
+      "version": 3,
+      "parameters": {},
+      "mapper": {
+        "url": "https://v1.american-football.api-sports.io/games",
+        "serializeUrl": false,
+        "method": "get",
+        "headers": [
+          {
+            "name": "x-rapidapi-key",
+            "value": "{{1.sportsAPIs.apiSports}}"
+          },
+          {
+            "name": "x-rapidapi-host", 
+            "value": "v1.american-football.api-sports.io"
+          }
+        ],
+        "qs": [
+          {
+            "name": "season",
+            "value": "{{formatDate(now; \"YYYY\")}}"
+          },
+          {
+            "name": "league",
+            "value": "1"
+          }
+        ],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "authUser": "",
+        "authPass": "",
+        "timeout": 300,
+        "shareCookies": false,
+        "ca": "",
+        "rejectUnauthorized": true,
+        "followRedirect": true,
+        "useQuerystring": false,
+        "gzip": true,
+        "useMtls": false
+      },
+      "metadata": {
+        "designer": {
+          "x": 300,
+          "y": 0
+        },
+        "restore": {
+          "method": {
+            "label": "GET"
+          },
+          "bodyType": {
+            "label": "Raw"
+          }
+        },
+        "expect": [
+          {
+            "name": "url",
+            "type": "url",
+            "label": "URL",
+            "required": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 3,
+      "module": "http:ActionSendData",
+      "version": 3, 
+      "parameters": {},
+      "mapper": {
+        "url": "https://v1.basketball.api-sports.io/games",
+        "serializeUrl": false,
+        "method": "get",
+        "headers": [
+          {
+            "name": "x-rapidapi-key",
+            "value": "{{1.sportsAPIs.apiSports}}"
+          },
+          {
+            "name": "x-rapidapi-host",
+            "value": "v1.basketball.api-sports.io" 
+          }
+        ],
+        "qs": [
+          {
+            "name": "season",
+            "value": "{{formatDate(now; \"YYYY-YYYY\"; \"add1year\")}}"
+          },
+          {
+            "name": "league",
+            "value": "12"
+          }
+        ],
+        "bodyType": "raw", 
+        "parseResponse": true,
+        "timeout": 300
+      },
+      "metadata": {
+        "designer": {
+          "x": 300,
+          "y": 150
+        }
+      }
+    },
+    {
+      "id": 4,
+      "module": "http:ActionSendData",
+      "version": 3,
+      "parameters": {},
+      "mapper": {
+        "url": "https://v1.baseball.api-sports.io/games",
+        "serializeUrl": false,
+        "method": "get",
+        "headers": [
+          {
+            "name": "x-rapidapi-key",
+            "value": "{{1.sportsAPIs.apiSports}}"
+          },
+          {
+            "name": "x-rapidapi-host",
+            "value": "v1.baseball.api-sports.io"
+          }
+        ],
+        "qs": [
+          {
+            "name": "season", 
+            "value": "{{formatDate(now; \"YYYY\")}}"
+          },
+          {
+            "name": "league",
+            "value": "1"
+          }
+        ],
+        "bodyType": "raw",
+        "parseResponse": true,
+        "timeout": 300
+      },
+      "metadata": {
+        "designer": {
+          "x": 300,
+          "y": 300
+        }
+      }
+    },
+    {
+      "id": 5,
+      "module": "util:Aggregator",
+      "version": 1,
+      "parameters": {
+        "feeder": 2
+      },
+      "mapper": {
+        "array": "{{2.data.response}}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 600,
+          "y": 0
+        }
+      }
+    },
+    {
+      "id": 6,
+      "module": "util:Aggregator", 
+      "version": 1,
+      "parameters": {
+        "feeder": 3
+      },
+      "mapper": {
+        "array": "{{3.data.response}}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 600,
+          "y": 150
+        }
+      }
+    },
+    {
+      "id": 7,
+      "module": "util:Aggregator",
+      "version": 1, 
+      "parameters": {
+        "feeder": 4
+      },
+      "mapper": {
+        "array": "{{4.data.response}}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 600,
+          "y": 300
+        }
+      }
+    },
+    {
+      "id": 8,
+      "module": "builtin:BasicRouter",
+      "version": 1,
+      "parameters": {},
+      "mapper": {},
+      "metadata": {
+        "designer": {
+          "x": 900,
+          "y": 150
+        }
+      },
+      "routes": [
+        {
+          "flow": [
+            {
+              "id": 9,
+              "module": "util:SetVariable2",
+              "version": 1,
+              "parameters": {},
+              "mapper": {
+                "name": "processedData",
+                "scope": "roundtrip",
+                "value": {
+                  "sport": "NFL",
+                  "games": "{{5.array}}",
+                  "timestamp": "{{now}}",
+                  "count": "{{length(5.array)}}"
+                }
+              },
+              "metadata": {
+                "designer": {
+                  "x": 1200,
+                  "y": 0
+                }
+              }
+            }
+          ]
+        },
+        {
+          "flow": [
+            {
+              "id": 10,
+              "module": "util:SetVariable2",
+              "version": 1,
+              "parameters": {},
+              "mapper": {
+                "name": "processedData",
+                "scope": "roundtrip", 
+                "value": {
+                  "sport": "NBA",
+                  "games": "{{6.array}}",
+                  "timestamp": "{{now}}",
+                  "count": "{{length(6.array)}}"
+                }
+              },
+              "metadata": {
+                "designer": {
+                  "x": 1200,
+                  "y": 150
+                }
+              }
+            }
+          ]
+        },
+        {
+          "flow": [
+            {
+              "id": 11,
+              "module": "util:SetVariable2",
+              "version": 1,
+              "parameters": {},
+              "mapper": {
+                "name": "processedData",
+                "scope": "roundtrip",
+                "value": {
+                  "sport": "MLB", 
+                  "games": "{{7.array}}",
+                  "timestamp": "{{now}}",
+                  "count": "{{length(7.array)}}"
+                }
+              },
+              "metadata": {
+                "designer": {
+                  "x": 1200,
+                  "y": 300
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "module": "datastore:ActionSelectRecord",
+      "version": 3,
+      "parameters": {
+        "datastore": "sports-cache"
+      },
+      "mapper": {
+        "key": "{{9.processedData.sport}}-{{formatDate(now; \"YYYY-MM-DD\")}}"
+      },
+      "metadata": {
+        "designer": {
+          "x": 1500,
+          "y": 75
+        }
+      }
+    },
+    {
+      "id": 13,
+      "module": "util:Router",
+      "version": 1,
+      "parameters": {},
+      "filter": {
+        "name": "Check if data is new",
+        "conditions": [
+          [
+            {
+              "a": "{{12.key}}",
+              "o": "not_exist"
+            }
+          ]
+        ]
+      },
+      "mapper": {},
+      "metadata": {
+        "designer": {
+          "x": 1800,
+          "y": 75
+        }
+      },
+      "routes": [
+        {
+          "flow": [
+            {
+              "id": 14,
+              "module": "datastore:ActionUpsertRecord",
+              "version": 3,
+              "parameters": {
+                "datastore": "sports-cache"
+              },
+              "mapper": {
+                "key": "{{9.processedData.sport}}-{{formatDate(now; \"YYYY-MM-DD\")}}",
+                "record": "{{9.processedData}}"
+              },
+              "metadata": {
+                "designer": {
+                  "x": 2100,
+                  "y": 75
+                }
+              }
+            },
+            {
+              "id": 15,
+              "module": "webhook:CustomWebHook",
+              "version": 1,
+              "parameters": {
+                "hook": "content-processing-webhook"
+              },
+              "mapper": {
+                "payload": "{{9.processedData}}"
+              },
+              "metadata": {
+                "designer": {
+                  "x": 2400,
+                  "y": 75
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "version": 1,
+    "scenario": {
+      "roundtrips": 1,
+      "maxErrors": 3,
+      "autoCommit": false,
+      "sequential": false,
+      "confidential": false,
+      "dataloss": false,
+      "dlq": false
+    },
+    "designer": {
+      "orphans": []
+    },
+    "zone": "us1.make.com"
+  }
+}

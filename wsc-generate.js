@@ -6,10 +6,14 @@ import fs from "fs/promises";
 import path from "path";
 
 const BRAND = {
-  siteTitle: "West Side Cotorreo — Podcast Oficial",
+  siteTitle: "West Side Cotorreo — Sports News Automation Hub",
   baseUrl: "https://baysbestshorts-eng.github.io/westsidecotorreo-site", // no trailing slash
   channelId: "UCmJ1mRAtqRB0QUPYP-uvZiw",
-  maxVideos: 300
+  maxVideos: 300,
+  automationProject: {
+    title: "Sports News Video Automation",
+    description: "Comprehensive automation system using Make.com and Fliki AI to generate 10-20 sports news videos per day"
+  }
 };
 
 const OUT = "site";
@@ -28,13 +32,30 @@ a{color:var(--brand);text-decoration:none}a:hover{text-decoration:underline}
 .card img{width:100%;border-radius:12px}
 .btn{display:inline-block;padding:10px 14px;border-radius:10px;background:#111;color:#fff;margin:6px 8px 6px 0}
 .btn.secondary{background:#eee;color:#111;border:1px solid #ddd}
+.btn.primary{background:var(--brand);color:white}
 .tag{background:#eee;border-radius:999px;padding:6px 10px;font-size:12px;margin:6px 8px 0 0;display:inline-block}
 footer{margin:40px 0 10px;color:var(--muted);font-size:12px;text-align:center}
 .nav{display:flex;gap:10px;flex-wrap:wrap}
 .search{display:flex;gap:10px;align-items:center;margin:10px 0 14px}
 input[type="search"]{flex:1;padding:10px 12px;border-radius:10px;border:1px solid #ddd}
 .small{font-size:13px;color:var(--muted)}
-hr{border:0;border-top:1px solid #e8e8e8;margin:18px 0}
+/* Automation Hero Section */
+.automation-hero{background:linear-gradient(135deg,var(--brand),#0c7);color:white;padding:40px;border-radius:18px;margin:20px 0 30px;text-align:center}
+.automation-hero h2{margin:0 0 15px;font-size:28px}
+.automation-hero p{margin:0 0 25px;font-size:16px;opacity:0.9}
+.hero-buttons{margin-bottom:25px}
+.automation-hero .btn{background:rgba(255,255,255,0.9);color:var(--brand)}
+.automation-hero .btn:not(.primary){background:rgba(255,255,255,0.2);color:white;border:1px solid rgba(255,255,255,0.3)}
+.stats-bar{display:flex;justify-content:center;flex-wrap:wrap;gap:15px;font-size:13px;opacity:0.9}
+.stats-bar span{background:rgba(255,255,255,0.2);padding:6px 12px;border-radius:20px}
+@media(max-width:768px){
+  .wrap{padding:16px}
+  header{flex-direction:column;align-items:flex-start;gap:10px}
+  .automation-hero{padding:25px;text-align:left}
+  .automation-hero h2{font-size:24px}
+  .stats-bar{justify-content:flex-start}
+  .grid{grid-template-columns:1fr}
+}
 `;
 
 /* ----------------- Head ----------------- */
@@ -131,18 +152,34 @@ async function fetchRSS(channelId) {
 /* ----------------- Pages ----------------- */
 const homePage = (videos, tags) => {
   const url = BRAND.baseUrl;
-  const desc = "Episodios y Shorts de West Side Cotorreo con búsqueda, tags y hubs.";
+  const desc = BRAND.automationProject.description;
   const og = videos[0]?.thumb || `${BRAND.baseUrl}/og.jpg`;
   return `${head(BRAND.siteTitle, desc, url, og)}<body><div class="wrap">
 <header>
   <div><a href="${BRAND.baseUrl}" style="font-weight:700">${BRAND.siteTitle}</a></div>
   <nav class="nav small">
+    <a href="${BRAND.baseUrl}/sports-automation/">🤖 Automation System</a>
     <a href="${BRAND.baseUrl}/hubs/shorts/">Shorts</a>
     <a href="${BRAND.baseUrl}/hubs/long/">Episodios largos</a>
     <a href="${BRAND.baseUrl}/rss.xml">RSS</a>
     <a href="${BRAND.baseUrl}/sitemap.xml">Sitemap</a>
   </nav>
 </header>
+
+<div class="automation-hero">
+  <h2>🚀 ${BRAND.automationProject.title}</h2>
+  <p>${BRAND.automationProject.description}</p>
+  <div class="hero-buttons">
+    <a href="${BRAND.baseUrl}/sports-automation/" class="btn primary">📖 View Documentation</a>
+    <a href="https://github.com/baysbestshorts-eng/westsidecotorreo-site/tree/main/sports-automation" class="btn">💻 View Source</a>
+  </div>
+  <div class="stats-bar">
+    <span>⚡ 10-20 videos/day</span>
+    <span>🏈 5 sports covered</span>
+    <span>💰 Smart cost controls</span>
+    <span>🔄 Auto error recovery</span>
+  </div>
+</div>
 
 <div class="search">
   <input id="q" type="search" placeholder="Buscar episodio, invitado o tema…">
@@ -171,7 +208,7 @@ q?.addEventListener('input', e=>{
 });
 </script>
 
-<footer>© ${new Date().getFullYear()} West Side Cotorreo</footer>
+<footer>© ${new Date().getFullYear()} West Side Cotorreo | <a href="${BRAND.baseUrl}/sports-automation/">Sports Automation Hub</a></footer>
 </div></body></html>`;
 };
 

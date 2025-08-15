@@ -1,7 +1,9 @@
-name: Build & Deploy WSC Pages
+name: WSC Breaking News Bot
 on:
   workflow_dispatch:
-  schedule: [{ cron: "0 */12 * * *" }]
+  schedule: 
+    - cron: "*/5 * * * *"  # Every 5 minutes for breaking news monitoring
+    - cron: "0 */12 * * *" # Every 12 hours for site rebuild
   push:
     branches: [ main ]
 
@@ -11,12 +13,29 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "pages"
-  cancel-in-progress: true
+  group: "news-monitoring"
+  cancel-in-progress: false
 
 jobs:
-  build:
+  breaking-news-monitor:
     runs-on: ubuntu-latest
+    if: github.event.schedule == '*/5 * * * *' || github.event_name == 'workflow_dispatch'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - name: Install dependencies
+        run: npm install
+      - name: Run Breaking News Bot
+        env:
+          EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: timeout 4m node breaking-news-bot.js || true
+        
+  build-site:
+    runs-on: ubuntu-latest
+    if: github.event.schedule == '0 */12 * * *' || github.event_name == 'push'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -25,9 +44,11 @@ jobs:
       - uses: actions/upload-pages-artifact@v3
         with:
           path: ./site
+          
   deploy:
-    needs: build
+    needs: build-site
     runs-on: ubuntu-latest
+    if: github.event.schedule == '0 */12 * * *' || github.event_name == 'push'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

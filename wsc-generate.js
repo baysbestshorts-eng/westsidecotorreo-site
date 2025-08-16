@@ -493,6 +493,9 @@ ${videos.map(v=>`
 const makeSitemap = (videos,tags)=>`<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>${BRAND.baseUrl}</loc></url>
+  <url><loc>${BRAND.baseUrl}/en/</loc></url>
+  <url><loc>${BRAND.baseUrl}/accessibility/</loc></url>
+  <url><loc>${BRAND.baseUrl}/en/accessibility/</loc></url>
   <url><loc>${BRAND.baseUrl}/hubs/shorts/</loc></url>
   <url><loc>${BRAND.baseUrl}/hubs/long/</loc></url>
   ${tags.map(t=>`<url><loc>${BRAND.baseUrl}/tags/${slug(t)}/</loc></url>`).join("")}

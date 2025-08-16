@@ -18,7 +18,7 @@ const OUT = "site";
 const css = `
 :root{--bg:#fafafa;--text:#111;--muted:#777;--card:#fff;--line:#e8e8e8;--brand:#0a5}
 *{box-sizing:border-box}
-body{font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;margin:0;background:var(--bg);color:var(--text)}
+body{font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;margin:0;background:linear-gradient(90deg, #006847 0%, #006847 33.33%, #fff 33.33%, #fff 66.66%, #ce1126 66.66%, #ce1126 100%);color:var(--text)}
 .wrap{max-width:1100px;margin:0 auto;padding:24px}
 header{display:flex;gap:16px;justify-content:space-between;align-items:center;margin:6px 0 18px}
 h1{font-size:40px;margin:10px 0 6px}
@@ -57,7 +57,8 @@ const head = (title, desc, url, image) => `<!doctype html><html lang="es"><head>
 const clean = s => (s || "").toString().replace(/\s+/g," ").trim();
 const slug = s => clean(s).toLowerCase()
   .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
-  .replace(/[^\p{L}\p{N}]+/gu,"-").replace(/^-+|-+$/g,"").slice(0,80);
+  .replace(/[^
+\p{L}\p{N}]+/gu,"-").replace(/^-+|-+$/g,"").slice(0,80);
 
 const shareLinks = (url, title) => ({
   x: `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`,

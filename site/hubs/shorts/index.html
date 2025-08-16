@@ -3,6 +3,8 @@
 <title>WSC — Solo Shorts</title>
 <meta name="description" content="Solo Shorts de West Side Cotorreo.">
 <link rel="canonical" href="https://baysbestshorts-eng.github.io/westsidecotorreo-site/hubs/shorts/">
+<link rel="preconnect" href="https://i.ytimg.com">
+<link rel="preconnect" href="https://www.youtube.com">
 <meta name="google-site-verification" content="nuTAFFgWa9EpE_0-svLICBXdOiuwkP4OZlJyulyc9MI" />
 <meta property="og:title" content="WSC — Solo Shorts">
 <meta property="og:description" content="Solo Shorts de West Side Cotorreo.">
@@ -11,30 +13,60 @@
 <meta property="og:image" content="https://baysbestshorts-eng.github.io/westsidecotorreo-site/og.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <style>
-:root{--bg:#fafafa;--text:#111;--muted:#777;--card:#fff;--line:#e8e8e8;--brand:#0a5}
+:root{
+  --bg:#fafafa;--text:#111;--muted:#777;--card:#fff;--line:#e8e8e8;--brand:#0a5;
+  --focus:#005fcc;--focus-ring:2px solid var(--focus);
+}
+:root.high-contrast{
+  --bg:#000;--text:#fff;--muted:#ccc;--card:#111;--line:#444;--brand:#0ff;
+  --focus:#ff0;--focus-ring:3px solid var(--focus);
+}
 *{box-sizing:border-box}
-body{font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;margin:0;background:var(--bg);color:var(--text)}
+*:focus{outline:var(--focus-ring);outline-offset:2px}
+.skip-link{position:absolute;top:-40px;left:6px;background:var(--brand);color:#fff;padding:8px;border-radius:4px;text-decoration:none;z-index:1000;transition:top 0.3s}
+.skip-link:focus{top:6px}
+.visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+body{font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;margin:0;background:var(--bg);color:var(--text);line-height:1.5}
 .wrap{max-width:1100px;margin:0 auto;padding:24px}
-header{display:flex;gap:16px;justify-content:space-between;align-items:center;margin:6px 0 18px}
-h1{font-size:40px;margin:10px 0 6px}
-a{color:var(--brand);text-decoration:none}a:hover{text-decoration:underline}
+header{display:flex;gap:16px;justify-content:space-between;align-items:center;margin:6px 0 18px;position:relative}
+.header-controls{display:flex;gap:8px;align-items:center}
+.lang-switch, .contrast-toggle{background:none;border:1px solid var(--line);border-radius:6px;padding:6px 10px;color:var(--text);cursor:pointer;font-size:12px}
+.lang-switch:hover, .contrast-toggle:hover{background:var(--line)}
+h1{font-size:40px;margin:10px 0 6px;line-height:1.2}
+a{color:var(--brand);text-decoration:none}
+a:hover, a:focus{text-decoration:underline}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px}
-.card img{width:100%;border-radius:12px}
-.btn{display:inline-block;padding:10px 14px;border-radius:10px;background:#111;color:#fff;margin:6px 8px 6px 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;transition:transform 0.2s,box-shadow 0.2s;display:block}
+.card:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.1)}
+.card:focus{transform:translateY(-2px)}
+.card img{width:100%;border-radius:12px;height:auto;loading:lazy}
+.btn{display:inline-block;padding:10px 14px;border-radius:10px;background:#111;color:#fff;margin:6px 8px 6px 0;border:none;cursor:pointer;text-decoration:none}
+.btn:hover, .btn:focus{background:#222}
 .btn.secondary{background:#eee;color:#111;border:1px solid #ddd}
+.btn.secondary:hover, .btn.secondary:focus{background:#ddd}
 .tag{background:#eee;border-radius:999px;padding:6px 10px;font-size:12px;margin:6px 8px 0 0;display:inline-block}
 footer{margin:40px 0 10px;color:var(--muted);font-size:12px;text-align:center}
 .nav{display:flex;gap:10px;flex-wrap:wrap}
 .search{display:flex;gap:10px;align-items:center;margin:10px 0 14px}
-input[type="search"]{flex:1;padding:10px 12px;border-radius:10px;border:1px solid #ddd}
+input[type="search"]{flex:1;padding:10px 12px;border-radius:10px;border:1px solid #ddd;background:var(--card);color:var(--text)}
 .small{font-size:13px;color:var(--muted)}
 hr{border:0;border-top:1px solid #e8e8e8;margin:18px 0}
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:0.01ms !important;animation-iteration-count:1 !important;transition-duration:0.01ms !important}
+}
 </style>
 </head><body><div class="wrap">
-<header><a href="https://baysbestshorts-eng.github.io/westsidecotorreo-site">← Inicio</a></header>
+<a href="#main-content" class="skip-link">Saltar al contenido principal</a>
+<header role="banner">
+  <a href="https://baysbestshorts-eng.github.io/westsidecotorreo-site">← Inicio</a>
+</header>
+
+<main id="main-content" role="main">
 <h1>Solo Shorts</h1>
-<div class="grid">
+<div class="grid" role="region" aria-label="Solo Shorts episodes">
 
 </div>
+</main>
+
+<footer role="contentinfo">© 2025 West Side Cotorreo</footer>
 </div></body></html>

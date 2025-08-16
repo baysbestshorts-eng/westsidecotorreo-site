@@ -12,37 +12,125 @@ const BRAND = {
   maxVideos: 300
 };
 
+// Localization support
+const LANGUAGES = {
+  es: {
+    code: 'es',
+    name: 'Español',
+    siteTitle: 'West Side Cotorreo — Podcast Oficial',
+    description: 'Episodios y Shorts de West Side Cotorreo con búsqueda, tags y hubs.',
+    nav: {
+      shorts: 'Shorts',
+      long: 'Episodios largos',
+      rss: 'RSS',
+      sitemap: 'Sitemap',
+      accessibility: 'Accesibilidad'
+    },
+    search: {
+      placeholder: 'Buscar episodio, invitado o tema…',
+      filter: 'Filtrar:'
+    },
+    ui: {
+      skipToContent: 'Saltar al contenido principal',
+      home: 'Inicio',
+      highContrast: 'Alto contraste',
+      normalContrast: 'Contraste normal',
+      toggleContrast: 'Alternar contraste',
+      languageSwitch: 'Cambiar idioma'
+    },
+    accessibility: {
+      title: 'Declaración de Accesibilidad',
+      heading: 'Compromiso con la Accesibilidad',
+      content: 'Nos comprometemos a hacer que nuestro podcast sea accesible para todos los usuarios, independientemente de sus capacidades.'
+    }
+  },
+  en: {
+    code: 'en',
+    name: 'English',
+    siteTitle: 'West Side Cotorreo — Official Podcast',
+    description: 'Episodes and Shorts from West Side Cotorreo with search, tags and hubs.',
+    nav: {
+      shorts: 'Shorts',
+      long: 'Long Episodes',
+      rss: 'RSS',
+      sitemap: 'Sitemap',
+      accessibility: 'Accessibility'
+    },
+    search: {
+      placeholder: 'Search episode, guest or topic…',
+      filter: 'Filter:'
+    },
+    ui: {
+      skipToContent: 'Skip to main content',
+      home: 'Home',
+      highContrast: 'High contrast',
+      normalContrast: 'Normal contrast',
+      toggleContrast: 'Toggle contrast',
+      languageSwitch: 'Switch language'
+    },
+    accessibility: {
+      title: 'Accessibility Statement',
+      heading: 'Commitment to Accessibility',
+      content: 'We are committed to making our podcast accessible to all users, regardless of their abilities.'
+    }
+  }
+};
+
 const OUT = "site";
 
 /* ----------------- Styles ----------------- */
 const css = `
-:root{--bg:#fafafa;--text:#111;--muted:#777;--card:#fff;--line:#e8e8e8;--brand:#0a5}
+:root{
+  --bg:#fafafa;--text:#111;--muted:#777;--card:#fff;--line:#e8e8e8;--brand:#0a5;
+  --focus:#005fcc;--focus-ring:2px solid var(--focus);
+}
+:root.high-contrast{
+  --bg:#000;--text:#fff;--muted:#ccc;--card:#111;--line:#444;--brand:#0ff;
+  --focus:#ff0;--focus-ring:3px solid var(--focus);
+}
 *{box-sizing:border-box}
-body{font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;margin:0;background:var(--bg);color:var(--text)}
+*:focus{outline:var(--focus-ring);outline-offset:2px}
+.skip-link{position:absolute;top:-40px;left:6px;background:var(--brand);color:#fff;padding:8px;border-radius:4px;text-decoration:none;z-index:1000;transition:top 0.3s}
+.skip-link:focus{top:6px}
+.visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+body{font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;margin:0;background:var(--bg);color:var(--text);line-height:1.5}
 .wrap{max-width:1100px;margin:0 auto;padding:24px}
-header{display:flex;gap:16px;justify-content:space-between;align-items:center;margin:6px 0 18px}
-h1{font-size:40px;margin:10px 0 6px}
-a{color:var(--brand);text-decoration:none}a:hover{text-decoration:underline}
+header{display:flex;gap:16px;justify-content:space-between;align-items:center;margin:6px 0 18px;position:relative}
+.header-controls{display:flex;gap:8px;align-items:center}
+.lang-switch, .contrast-toggle{background:none;border:1px solid var(--line);border-radius:6px;padding:6px 10px;color:var(--text);cursor:pointer;font-size:12px}
+.lang-switch:hover, .contrast-toggle:hover{background:var(--line)}
+h1{font-size:40px;margin:10px 0 6px;line-height:1.2}
+a{color:var(--brand);text-decoration:none}
+a:hover, a:focus{text-decoration:underline}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px}
-.card img{width:100%;border-radius:12px}
-.btn{display:inline-block;padding:10px 14px;border-radius:10px;background:#111;color:#fff;margin:6px 8px 6px 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;transition:transform 0.2s,box-shadow 0.2s;display:block}
+.card:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.1)}
+.card:focus{transform:translateY(-2px)}
+.card img{width:100%;border-radius:12px;height:auto;loading:lazy}
+.btn{display:inline-block;padding:10px 14px;border-radius:10px;background:#111;color:#fff;margin:6px 8px 6px 0;border:none;cursor:pointer;text-decoration:none}
+.btn:hover, .btn:focus{background:#222}
 .btn.secondary{background:#eee;color:#111;border:1px solid #ddd}
+.btn.secondary:hover, .btn.secondary:focus{background:#ddd}
 .tag{background:#eee;border-radius:999px;padding:6px 10px;font-size:12px;margin:6px 8px 0 0;display:inline-block}
 footer{margin:40px 0 10px;color:var(--muted);font-size:12px;text-align:center}
 .nav{display:flex;gap:10px;flex-wrap:wrap}
 .search{display:flex;gap:10px;align-items:center;margin:10px 0 14px}
-input[type="search"]{flex:1;padding:10px 12px;border-radius:10px;border:1px solid #ddd}
+input[type="search"]{flex:1;padding:10px 12px;border-radius:10px;border:1px solid #ddd;background:var(--card);color:var(--text)}
 .small{font-size:13px;color:var(--muted)}
 hr{border:0;border-top:1px solid #e8e8e8;margin:18px 0}
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:0.01ms !important;animation-iteration-count:1 !important;transition-duration:0.01ms !important}
+}
 `;
 
 /* ----------------- Head ----------------- */
-const head = (title, desc, url, image) => `<!doctype html><html lang="es"><head>
+const head = (title, desc, url, image, lang = 'es') => `<!doctype html><html lang="${lang}"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${title}</title>
 <meta name="description" content="${desc}">
 <link rel="canonical" href="${url}">
+<link rel="preconnect" href="https://i.ytimg.com">
+<link rel="preconnect" href="https://www.youtube.com">
 <meta name="google-site-verification" content="nuTAFFgWa9EpE_0-svLICBXdOiuwkP4OZlJyulyc9MI" />
 <meta property="og:title" content="${title}">
 <meta property="og:description" content="${desc}">
@@ -129,36 +217,51 @@ async function fetchRSS(channelId) {
 }
 
 /* ----------------- Pages ----------------- */
-const homePage = (videos, tags) => {
+const homePage = (videos, tags, lang = 'es') => {
+  const t = LANGUAGES[lang];
   const url = BRAND.baseUrl;
-  const desc = "Episodios y Shorts de West Side Cotorreo con búsqueda, tags y hubs.";
+  const desc = t.description;
   const og = videos[0]?.thumb || `${BRAND.baseUrl}/og.jpg`;
-  return `${head(BRAND.siteTitle, desc, url, og)}<body><div class="wrap">
-<header>
-  <div><a href="${BRAND.baseUrl}" style="font-weight:700">${BRAND.siteTitle}</a></div>
-  <nav class="nav small">
-    <a href="${BRAND.baseUrl}/hubs/shorts/">Shorts</a>
-    <a href="${BRAND.baseUrl}/hubs/long/">Episodios largos</a>
-    <a href="${BRAND.baseUrl}/rss.xml">RSS</a>
-    <a href="${BRAND.baseUrl}/sitemap.xml">Sitemap</a>
+  const otherLang = lang === 'es' ? 'en' : 'es';
+  
+  return `${head(t.siteTitle, desc, url, og, lang)}<body><div class="wrap">
+<a href="#main-content" class="skip-link">${t.ui.skipToContent}</a>
+<header role="banner">
+  <div><a href="${BRAND.baseUrl}" style="font-weight:700">${t.siteTitle}</a></div>
+  <div class="header-controls">
+    <button class="contrast-toggle" onclick="toggleContrast()" aria-label="${t.ui.toggleContrast}">${t.ui.highContrast}</button>
+    <select class="lang-switch" onchange="switchLanguage(this.value)" aria-label="${t.ui.languageSwitch}">
+      <option value="es" ${lang === 'es' ? 'selected' : ''}>${LANGUAGES.es.name}</option>
+      <option value="en" ${lang === 'en' ? 'selected' : ''}>${LANGUAGES.en.name}</option>
+    </select>
+  </div>
+  <nav class="nav small" role="navigation" aria-label="Main navigation">
+    <a href="${BRAND.baseUrl}/hubs/shorts/">${t.nav.shorts}</a>
+    <a href="${BRAND.baseUrl}/hubs/long/">${t.nav.long}</a>
+    <a href="${BRAND.baseUrl}/rss.xml">${t.nav.rss}</a>
+    <a href="${BRAND.baseUrl}/sitemap.xml">${t.nav.sitemap}</a>
+    <a href="${BRAND.baseUrl}/accessibility/">${t.nav.accessibility}</a>
   </nav>
 </header>
 
-<div class="search">
-  <input id="q" type="search" placeholder="Buscar episodio, invitado o tema…">
-  <div class="small">Filtrar:
+<main id="main-content" role="main">
+<div class="search" role="search">
+  <label for="q" class="visually-hidden">${t.search.placeholder}</label>
+  <input id="q" type="search" placeholder="${t.search.placeholder}" aria-describedby="search-help">
+  <div class="small" id="search-help">${t.search.filter}
     ${tags.map(t=>`<a class="tag" href="${BRAND.baseUrl}/tags/${slug(t)}/">${t}</a>`).join(" ")}
   </div>
 </div>
 
-<div class="grid" id="grid">
+<div class="grid" id="grid" role="region" aria-label="Episodes grid">
 ${videos.map(v=>`
-  <a class="card" data-title="${v.title.toLowerCase()}" data-tags="${v.tags.join(",").toLowerCase()}" href="${BRAND.baseUrl}/episodios/${v.slug}/">
-    <img src="${v.thumb}" alt="">
+  <a class="card" data-title="${v.title.toLowerCase()}" data-tags="${v.tags.join(",").toLowerCase()}" href="${BRAND.baseUrl}/episodios/${v.slug}/" aria-label="Episode: ${v.title}">
+    <img src="${v.thumb}" alt="Thumbnail for ${v.title}" loading="lazy">
     <h3>${v.title}</h3>
-    <div>${v.tags.map(t=>`<span class="tag">${t}</span>`).join("")}</div>
+    <div role="list" aria-label="Tags">${v.tags.map(t=>`<span class="tag" role="listitem">${t}</span>`).join("")}</div>
   </a>`).join("")}
 </div>
+</main>
 
 <script>
 const q=document.getElementById('q'), cards=[...document.querySelectorAll('#grid .card')];
@@ -169,44 +272,154 @@ q?.addEventListener('input', e=>{
     c.style.display=ok?'':'none';
   });
 });
+
+function toggleContrast() {
+  document.documentElement.classList.toggle('high-contrast');
+  const isHighContrast = document.documentElement.classList.contains('high-contrast');
+  const btn = document.querySelector('.contrast-toggle');
+  btn.textContent = isHighContrast ? '${t.ui.normalContrast}' : '${t.ui.highContrast}';
+  localStorage.setItem('high-contrast', isHighContrast);
+}
+
+function switchLanguage(newLang) {
+  window.location.href = newLang === 'es' ? '${BRAND.baseUrl}' : '${BRAND.baseUrl}/' + newLang + '/';
+}
+
+// Restore contrast preference
+if (localStorage.getItem('high-contrast') === 'true') {
+  document.documentElement.classList.add('high-contrast');
+  document.querySelector('.contrast-toggle').textContent = '${t.ui.normalContrast}';
+}
 </script>
 
-<footer>© ${new Date().getFullYear()} West Side Cotorreo</footer>
+<footer role="contentinfo">© ${new Date().getFullYear()} West Side Cotorreo</footer>
 </div></body></html>`;
 };
 
-const tagPage = (tag, items) => {
+const tagPage = (tag, items, lang = 'es') => {
+  const t = LANGUAGES[lang];
   const url = `${BRAND.baseUrl}/tags/${slug(tag)}/`;
   const desc = `Episodios etiquetados con ${tag} en West Side Cotorreo.`;
   const og = items[0]?.thumb || `${BRAND.baseUrl}/og.jpg`;
-  return `${head(`WSC — ${tag}`, desc, url, og)}<body><div class="wrap">
-<header><a href="${BRAND.baseUrl}">← Inicio</a></header>
+  
+  return `${head(`WSC — ${tag}`, desc, url, og, lang)}<body><div class="wrap">
+<a href="#main-content" class="skip-link">${t.ui.skipToContent}</a>
+<header role="banner">
+  <a href="${BRAND.baseUrl}">← ${t.ui.home}</a>
+</header>
+
+<main id="main-content" role="main">
 <h1>${tag}</h1>
-<div class="grid">
+<div class="grid" role="region" aria-label="Episodes tagged with ${tag}">
 ${items.map(v=>`
-  <a class="card" href="${BRAND.baseUrl}/episodios/${v.slug}/">
-    <img src="${v.thumb}" alt=""><h3>${v.title}</h3>
-    <div>${v.tags.map(t=>`<span class="tag">${t}</span>`).join("")}</div>
+  <a class="card" href="${BRAND.baseUrl}/episodios/${v.slug}/" aria-label="Episode: ${v.title}">
+    <img src="${v.thumb}" alt="Thumbnail for ${v.title}" loading="lazy">
+    <h3>${v.title}</h3>
+    <div role="list" aria-label="Tags">${v.tags.map(t=>`<span class="tag" role="listitem">${t}</span>`).join("")}</div>
   </a>`).join("")}
 </div>
 <footer class="small">Más tags en la portada.</footer>
+</main>
+
+<footer role="contentinfo">© ${new Date().getFullYear()} West Side Cotorreo</footer>
 </div></body></html>`;
 };
 
-const hubPage = (title, items, slugName) => {
+const hubPage = (title, items, slugName, lang = 'es') => {
+  const t = LANGUAGES[lang];
   const url = `${BRAND.baseUrl}/hubs/${slugName}/`;
   const desc = `${title} de West Side Cotorreo.`;
   const og = items[0]?.thumb || `${BRAND.baseUrl}/og.jpg`;
-  return `${head(`WSC — ${title}`, desc, url, og)}<body><div class="wrap">
-<header><a href="${BRAND.baseUrl}">← Inicio</a></header>
+  
+  return `${head(`WSC — ${title}`, desc, url, og, lang)}<body><div class="wrap">
+<a href="#main-content" class="skip-link">${t.ui.skipToContent}</a>
+<header role="banner">
+  <a href="${BRAND.baseUrl}">← ${t.ui.home}</a>
+</header>
+
+<main id="main-content" role="main">
 <h1>${title}</h1>
-<div class="grid">
+<div class="grid" role="region" aria-label="${title} episodes">
 ${items.map(v=>`
-  <a class="card" href="${BRAND.baseUrl}/episodios/${v.slug}/">
-    <img src="${v.thumb}" alt=""><h3>${v.title}</h3>
-    <div>${v.tags.map(t=>`<span class="tag">${t}</span>`).join("")}</div>
+  <a class="card" href="${BRAND.baseUrl}/episodios/${v.slug}/" aria-label="Episode: ${v.title}">
+    <img src="${v.thumb}" alt="Thumbnail for ${v.title}" loading="lazy">
+    <h3>${v.title}</h3>
+    <div role="list" aria-label="Tags">${v.tags.map(t=>`<span class="tag" role="listitem">${t}</span>`).join("")}</div>
   </a>`).join("")}
 </div>
+</main>
+
+<footer role="contentinfo">© ${new Date().getFullYear()} West Side Cotorreo</footer>
+</div></body></html>`;
+};
+
+const accessibilityPage = (lang = 'es') => {
+  const t = LANGUAGES[lang];
+  const url = `${BRAND.baseUrl}/accessibility/`;
+  const desc = t.accessibility.content;
+  
+  return `${head(t.accessibility.title, desc, url, `${BRAND.baseUrl}/og.jpg`, lang)}<body><div class="wrap">
+<a href="#main-content" class="skip-link">${t.ui.skipToContent}</a>
+<header role="banner">
+  <div><a href="${BRAND.baseUrl}" style="font-weight:700">${t.siteTitle}</a></div>
+  <div class="header-controls">
+    <button class="contrast-toggle" onclick="toggleContrast()" aria-label="${t.ui.toggleContrast}">${t.ui.highContrast}</button>
+    <select class="lang-switch" onchange="switchLanguage(this.value)" aria-label="${t.ui.languageSwitch}">
+      <option value="es" ${lang === 'es' ? 'selected' : ''}>${LANGUAGES.es.name}</option>
+      <option value="en" ${lang === 'en' ? 'selected' : ''}>${LANGUAGES.en.name}</option>
+    </select>
+  </div>
+  <nav class="nav small" role="navigation" aria-label="Main navigation">
+    <a href="${BRAND.baseUrl}/hubs/shorts/">${t.nav.shorts}</a>
+    <a href="${BRAND.baseUrl}/hubs/long/">${t.nav.long}</a>
+    <a href="${BRAND.baseUrl}/rss.xml">${t.nav.rss}</a>
+    <a href="${BRAND.baseUrl}/sitemap.xml">${t.nav.sitemap}</a>
+    <a href="${BRAND.baseUrl}/accessibility/" aria-current="page">${t.nav.accessibility}</a>
+  </nav>
+</header>
+
+<main id="main-content" role="main">
+<h1>${t.accessibility.heading}</h1>
+<div style="max-width:800px">
+  <p>${t.accessibility.content}</p>
+  
+  <h2>Características de Accesibilidad</h2>
+  <ul>
+    <li>Navegación por teclado en todos los elementos interactivos</li>
+    <li>Indicadores de foco visibles</li>
+    <li>Texto alternativo para todas las imágenes</li>
+    <li>Roles ARIA para lectores de pantalla</li>
+    <li>Modo de alto contraste disponible</li>
+    <li>Enlaces de salto para navegación rápida</li>
+    <li>Soporte para tecnologías de asistencia</li>
+  </ul>
+  
+  <h2>Feedback</h2>
+  <p>Si encuentras problemas de accesibilidad en nuestro sitio, por favor contáctanos.</p>
+</div>
+</main>
+
+<script>
+function toggleContrast() {
+  document.documentElement.classList.toggle('high-contrast');
+  const isHighContrast = document.documentElement.classList.contains('high-contrast');
+  const btn = document.querySelector('.contrast-toggle');
+  btn.textContent = isHighContrast ? '${t.ui.normalContrast}' : '${t.ui.highContrast}';
+  localStorage.setItem('high-contrast', isHighContrast);
+}
+
+function switchLanguage(newLang) {
+  window.location.href = newLang === 'es' ? '${BRAND.baseUrl}/accessibility/' : '${BRAND.baseUrl}/' + newLang + '/accessibility/';
+}
+
+// Restore contrast preference
+if (localStorage.getItem('high-contrast') === 'true') {
+  document.documentElement.classList.add('high-contrast');
+  document.querySelector('.contrast-toggle').textContent = '${t.ui.normalContrast}';
+}
+</script>
+
+<footer role="contentinfo">© ${new Date().getFullYear()} West Side Cotorreo</footer>
 </div></body></html>`;
 };
 
@@ -221,35 +434,43 @@ const jsonLD = (v) => ({
   "url": `${BRAND.baseUrl}/episodios/${v.slug}/`
 });
 
-const episodePage = (v)=>{
+const episodePage = (v, lang = 'es')=>{
+  const t = LANGUAGES[lang];
   const base = `${BRAND.baseUrl}/episodios/${v.slug}/`;
   const sh = shareLinks(base, v.title);
-  return `${head(v.title, v.summary, base, v.thumb)}<body><div class="wrap">
-<header><a href="${BRAND.baseUrl}">← Inicio</a></header>
+  
+  return `${head(v.title, v.summary, base, v.thumb, lang)}<body><div class="wrap">
+<a href="#main-content" class="skip-link">${t.ui.skipToContent}</a>
+<header role="banner">
+  <a href="${BRAND.baseUrl}">← ${t.ui.home}</a>
+</header>
+
+<main id="main-content" role="main">
 <h1>${v.title}</h1>
 <div class="tag">${new Date(v.published).toLocaleDateString('es-MX')} ${v.tags.map(t=>`· ${t}`).join(" ")}</div>
 
-<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:12px;margin:10px 0 14px">
+<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:12px;margin:10px 0 14px" role="region" aria-label="Video player">
   <iframe src="https://www.youtube.com/embed/${v.id}" title="${v.title}" allowfullscreen
-    style="position:absolute;top:0;left:0;width:100%;height:100%;border:0"></iframe>
+    style="position:absolute;top:0;left:0;width:100%;height:100%;border:0" loading="lazy"></iframe>
 </div>
 
 <p>${v.summary}</p>
 
-<p>
+<nav aria-label="Share and watch options">
   <a class="btn" href="https://www.youtube.com/watch?v=${v.id}">Ver en YouTube</a>
-  <a class="btn" href="${sh.x}">Compartir en X</a>
-  <a class="btn" href="${sh.wa}">WhatsApp</a>
-  <a class="btn secondary" href="${sh.rd}">Reddit</a>
-  <a class="btn secondary" href="${sh.li}">LinkedIn</a>
-  <a class="btn secondary" href="${sh.fb}">Facebook</a>
-</p>
+  <a class="btn" href="${sh.x}" aria-label="Share on X (Twitter)">Compartir en X</a>
+  <a class="btn" href="${sh.wa}" aria-label="Share on WhatsApp">WhatsApp</a>
+  <a class="btn secondary" href="${sh.rd}" aria-label="Share on Reddit">Reddit</a>
+  <a class="btn secondary" href="${sh.li}" aria-label="Share on LinkedIn">LinkedIn</a>
+  <a class="btn secondary" href="${sh.fb}" aria-label="Share on Facebook">Facebook</a>
+</nav>
+</main>
 
 <script type="application/ld+json">
 ${JSON.stringify(jsonLD(v), null, 2)}
 </script>
 
-<footer>© ${new Date().getFullYear()} West Side Cotorreo</footer>
+<footer role="contentinfo">© ${new Date().getFullYear()} West Side Cotorreo</footer>
 </div></body></html>`;
 };
 
@@ -289,9 +510,22 @@ async function main(){
     .sort((a,b)=> new Date(b.published) - new Date(a.published));
   const tags = [...new Set(videos.flatMap(v=>v.tags))];
 
-  await fs.writeFile(path.join(outDir, "index.html"), homePage(videos,tags));
+  // Generate Spanish (default) pages
+  await fs.writeFile(path.join(outDir, "index.html"), homePage(videos, tags, 'es'));
   await fs.writeFile(path.join(outDir, "rss.xml"), makeRSS(videos));
-  await fs.writeFile(path.join(outDir, "sitemap.xml"), makeSitemap(videos,tags));
+  await fs.writeFile(path.join(outDir, "sitemap.xml"), makeSitemap(videos, tags));
+  
+  // Accessibility page for Spanish
+  await fs.mkdir(path.join(outDir, "accessibility"), {recursive:true});
+  await fs.writeFile(path.join(outDir, "accessibility", "index.html"), accessibilityPage('es'));
+
+  // Generate English pages
+  await fs.mkdir(path.join(outDir, "en"), {recursive:true});
+  await fs.writeFile(path.join(outDir, "en", "index.html"), homePage(videos, tags, 'en'));
+  
+  // Accessibility page for English
+  await fs.mkdir(path.join(outDir, "en", "accessibility"), {recursive:true});
+  await fs.writeFile(path.join(outDir, "en", "accessibility", "index.html"), accessibilityPage('en'));
 
   // Hub pages
   const shorts = videos.filter(v=>v.tags.includes("shorts"));
